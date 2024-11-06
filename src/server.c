@@ -27,6 +27,7 @@
 
 #include <fcntl.h>
 #include <errno.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
 #include "ev.h"
@@ -914,6 +915,7 @@ static void eventloop_start(void *args) {
     ev_register_event(&ctx, sfd, EV_READ, accept_callback, &sfd);
     // Register periodic tasks
     if (loop_data->cronjobs == true) {
+        printf("Enabling cronjobs\n");
         ev_register_cron(&ctx, publish_stats, NULL, conf->stats_pub_interval, 0);
         ev_register_cron(&ctx, inflight_msg_check, NULL, 1, 0);
     }
@@ -989,6 +991,7 @@ int start_server(const char *addr, const char *port) {
 #if THREADSNR > 0
     pthread_t thrs[THREADSNR];
     for (int i = 0; i < THREADSNR; ++i) {
+        printf("Starting thread %d\n", i);
         pthread_create(&thrs[i], NULL, (void * (*) (void *)) &eventloop_start, &loop_start);
     }
 #endif
@@ -1025,10 +1028,10 @@ void daemonize(void) {
     int fd;
 
     if (fork() != 0)
-        exit(0);
+        exit(0);//父进程推出
 
-    setsid();
-
+    setsid();//创建新的会话
+    // 关闭标准输入输出
     if ((fd = open("/dev/null", O_RDWR, 0)) != -1) {
         dup2(fd, STDIN_FILENO);
         dup2(fd, STDOUT_FILENO);

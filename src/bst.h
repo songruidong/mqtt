@@ -34,7 +34,7 @@ struct bst_node {
     int height;
     struct bst_node *left;
     struct bst_node *right;
-    void *data;
+    void *data;//指向trienode
 };
 
 struct bst_node *bst_new(unsigned char, const void *);

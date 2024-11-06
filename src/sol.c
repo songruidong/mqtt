@@ -40,7 +40,7 @@ static void sigint_handler(int signum) {
     (void) signum;
     for (int i = 0; i < THREADSNR + 1; ++i) {
 #ifdef __linux__
-        eventfd_write(conf->run, 1);
+        eventfd_write(conf->run, 1);//写入事件ID
 #else
         (void) write(conf->run[0], &(unsigned long) {1}, sizeof(unsigned long));
 #endif
